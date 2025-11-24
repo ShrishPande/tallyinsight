@@ -1,0 +1,5 @@
+{
+  "name": "TallyInsight Dashboard",
+  "description": "A modern, React-based dashboard for Tally Prime utilizing XML API for real-time financial data and Gemini AI for automated financial insights.",
+  "requestFramePermissions": []
+}
