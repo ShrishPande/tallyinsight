@@ -1,9 +1,7 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
-const express = require('express');
 
 let mainWindow;
-let server;
 
 function createWindow() {
     // Create the browser window.
@@ -11,7 +9,7 @@ function createWindow() {
         width: 1280,
         height: 800,
         webPreferences: {
-            preload: path.join(__dirname, 'preload.js'),
+            preload: path.join(__dirname, 'preload.cjs'),
             nodeIntegration: false,
             contextIsolation: true,
         },
@@ -21,24 +19,19 @@ function createWindow() {
     // In development, we can load from the Next.js dev server.
 
     if (app.isPackaged) {
-        const expressApp = express();
-        const staticPath = path.join(process.resourcesPath, 'app', 'out');
-        expressApp.use(express.static(staticPath));
-
-        server = expressApp.listen(0, () => {
-            const port = server.address().port;
-            console.log(`Server running on port ${port}`);
-            mainWindow.loadURL(`http://localhost:${port}`);
-        });
+        // Load the index.html file from the dist/out folder
+        // __dirname is electron/ so we go up one level to find out/
+        const indexPath = path.join(__dirname, '../out/index.html');
+        mainWindow.loadFile(indexPath);
     } else {
         // In development, load the Next.js dev server
         mainWindow.loadURL('http://localhost:3000');
     }
 
     // Open the DevTools in development
-    if (!app.isPackaged) {
-        mainWindow.webContents.openDevTools();
-    }
+    // if (!app.isPackaged) {
+    mainWindow.webContents.openDevTools();
+    // }
 
     mainWindow.on('closed', function () {
         mainWindow = null;
@@ -56,11 +49,5 @@ app.on('window-all-closed', function () {
 app.on('activate', function () {
     if (mainWindow === null) {
         createWindow();
-    }
-});
-
-app.on('before-quit', () => {
-    if (server) {
-        server.close();
     }
 });
